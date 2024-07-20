@@ -27,14 +27,14 @@ export const setupServer = () => {
 
   server.use('*', (req, res, next) => {
     res.status(404).json({
-      status: 'error',
+      status: 404,
       message: 'Route not found',
     });
   });
 
   server.use((err, req, res, next) => {
     res.status(500).json({
-      status: 'error',
+      status: 500,
       message: 'Something went wrong',
       error: err.message,
     });
