@@ -49,12 +49,12 @@ export const creationContact = async (req, res, next) => {
     contactType,
   };
 
-  const addContact = createContact(newContact);
+  createContact(newContact);
 
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
-    data: addContact,
+    data: newContact,
   });
 };
 
