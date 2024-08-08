@@ -49,12 +49,12 @@ export const creationContact = async (req, res, next) => {
     contactType,
   };
 
-  createContact(newContact);
+  const postedContact = await createContact(newContact);
 
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
-    data: newContact,
+    data: postedContact,
   });
 };
 
@@ -64,6 +64,7 @@ export const contactDelete = async (req, res, next) => {
 
   if (!contact) {
     next(createHttpError(404, 'Contact not found'));
+    return;
   }
 
   res.status(204).send();
@@ -79,7 +80,7 @@ export const patchContact = async (req, res, next) => {
     ...(isFavourite !== undefined && { isFavourite }),
     ...(contactType && { contactType }),
   };
-  const contactChange = updateContact(contactId, changingContact);
+  const contactChange = await updateContact(contactId, changingContact);
 
   if (!contactChange) {
     next(createHttpError(404, 'Contact not found'));

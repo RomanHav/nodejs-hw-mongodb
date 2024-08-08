@@ -21,6 +21,6 @@ contactRouter.post('/contacts', ctrlWrapper(creationContact));
 
 contactRouter.patch('/contacts/:contactId', ctrlWrapper(patchContact));
 
-contactRouter.delete('/contact/:contactId', ctrlWrapper(contactDelete));
+contactRouter.delete('/contacts/:contactId', ctrlWrapper(contactDelete));
 
 export default contactRouter;
