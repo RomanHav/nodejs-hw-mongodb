@@ -6,6 +6,7 @@ export const postSchema = Joi.object({
   email: Joi.string().email().min(3).max(20),
   isFavourite: Joi.boolean(),
   contactType: Joi.string().valid('work', 'home', 'personal').required(),
+  userId: Joi.string().required(),
 });
 
 export const patchSchema = Joi.object({

@@ -10,31 +10,40 @@ import { ctrlWrapper } from '../middlewares/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { patchSchema, postSchema } from '../validations/contacts.js';
 import { isValidId } from '../middlewares/isValidId.js';
+import { authenticate } from '../middlewares/authenticate.js';
+import { checkRoles } from '../middlewares/checkRoles.js';
+import { ROLES } from '../constants/index.js';
 
 const contactRouter = Router();
-
-contactRouter.get('/contacts', ctrlWrapper(getContactsController));
+contactRouter.use(authenticate);
+contactRouter.get('/',
+  checkRoles(ROLES.ADMIN),
+  ctrlWrapper(getContactsController));
 
 contactRouter.get(
-  '/contacts/:contactId',
+  '/:contactId',
+  checkRoles(ROLES.ADMIN, ROLES.USER),
   isValidId,
   ctrlWrapper(getContactByIdController),
 );
 
 contactRouter.post(
-  '/contacts',
+  '/',
+  checkRoles(ROLES.ADMIN),
   validateBody(postSchema),
   ctrlWrapper(creationContact),
 );
 
 contactRouter.patch(
-  '/contacts/:contactId',
+  '/:contactId',
+  checkRoles(ROLES.ADMIN, ROLES.USER),
   validateBody(patchSchema),
   ctrlWrapper(patchContact),
 );
 
 contactRouter.delete(
-  '/contacts/:contactId',
+  '/:contactId',
+  checkRoles(ROLES.ADMIN),
   isValidId,
   ctrlWrapper(contactDelete),
 );
