@@ -8,15 +8,18 @@ import createHttpError from 'http-errors';
 import { createContact } from '../services/contacts.js';
 import { parsePagination } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
+import { parseFilterParams } from '../utils/parseFilterParams.js';
 
 export const getContactsController = async (req, res, next) => {
   const { page, perPage } = parsePagination(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
+  const filter = parseFilterParams(req.query);
   const contacts = await getAllContacts({
     page,
     perPage,
     sortBy,
     sortOrder,
+    filter,
   });
   res.status(200).json({
     status: 200,
@@ -35,7 +38,7 @@ export const getContactByIdController = async (req, res, next) => {
 
   res.status(200).json({
     status: 200,
-    message: `Successfully found contact with id ${contactId}!`,
+    message: 'Successfully found contact with id ${contactId}!',
     data: contact,
   });
 };
@@ -43,7 +46,7 @@ export const getContactByIdController = async (req, res, next) => {
 export const creationContact = async (req, res, next) => {
   const { name, phoneNumber, email, isFavourite, contactType } = req.body;
 
-  if (!name || !phoneNumber || !contactType) {
+  if (!name && !phoneNumber && !contactType) {
     throw createHttpError(
       404,
       'Name, phoneNumber and contactType are required',

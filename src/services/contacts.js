@@ -7,58 +7,102 @@ export const getAllContacts = async ({
   perPage = 10,
   sortOrder = SORT_ORDER.ASC,
   sortBy = 'name',
+  filter = {},
 }) => {
-  const limit = perPage;
-  const skip = (page - 1) * perPage;
+  try {
+    const limit = perPage;
+    const skip = (page - 1) * perPage;
 
-  const contactsQuerry = Contact.find();
-  const contactsCount = await Contact.find()
-    .merge(contactsQuerry)
-    .countDocuments();
+    const contactQuery = Contact.find();
 
-  const contacts = await contactsQuerry
-    .skip(skip)
-    .limit(limit)
-    .sort({ [sortBy]: sortOrder })
-    .exec();
+    if (filter.type) {
+      contactQuery.where('contactType').equals(filter.type);
+    }
+    if (typeof filter.isFavourite === 'boolean') {
+      contactQuery.where('isFavourite').equals(filter.isFavourite);
+    }
 
-  const paginationData = calculatePaginationData(contactsCount, page, perPage);
+    const contactsCount = await Contact.find()
+      .merge(contactQuery)
+      .countDocuments();
 
-  return {
-    data: contacts,
-    ...paginationData,
-  };
+    const contacts = await contactQuery
+      .skip(skip)
+      .limit(limit)
+      .sort({ [sortBy]: sortOrder })
+      .exec();
+
+    const paginationData = calculatePaginationData(
+      contactsCount,
+      page,
+      perPage,
+    );
+
+    return {
+      data: contacts,
+      ...paginationData,
+    };
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+    throw new Error('Failed to fetch contacts');
+  }
 };
 
 export const getContactsById = async (contactId) => {
-  const selectContact = await Contact.findById(contactId);
-  return selectContact;
+  try {
+    const contact = await Contact.findById(contactId);
+    if (!contact) {
+      throw new Error('Contact not found');
+    }
+    return contact;
+  } catch (error) {
+    console.error('Error fetching contact by ID:', error);
+    throw new Error('Failed to fetch contact');
+  }
 };
 
 export const createContact = async (payload) => {
-  const postContact = await Contact.create(payload);
-  return postContact;
+  try {
+    const newContact = await Contact.create(payload);
+    return newContact;
+  } catch (error) {
+    console.error('Error creating contact:', error);
+    throw new Error('Failed to create contact');
+  }
 };
 
 export const deleteContact = async (contactId) => {
-  const deletedContact = await Contact.findOneAndDelete({ _id: contactId });
-  return deletedContact;
+  try {
+    const deletedContact = await Contact.findOneAndDelete({ _id: contactId });
+    if (!deletedContact) {
+      throw new Error('Contact not found');
+    }
+    return deletedContact;
+  } catch (error) {
+    console.error('Error deleting contact:', error);
+    throw new Error('Failed to delete contact');
+  }
 };
 
 export const updateContact = async (contactId, payload, options = {}) => {
-  const updatedContact = await Contact.findOneAndUpdate(
-    { _id: contactId },
-    payload,
-    {
-      new: true,
-      includeResultMetadata: true,
-      ...options,
-    },
-  );
-  if (!updatedContact || !updatedContact.value) return null;
+  try {
+    const updatedContact = await Contact.findOneAndUpdate(
+      { _id: contactId },
+      payload,
+      {
+        new: true,
+        includeResultMetadata: true,
+        ...options,
+      },
+    );
+    if (!updatedContact) return null;
 
-  return {
-    contact: updatedContact.value,
-    isNew: Boolean(updatedContact?.lastErrorObject?.upserted),
-  };
+    return {
+      contact: updatedContact,
+      isNew: Boolean(updatedContact?.lastErrorObject?.upserted),
+    };
+  } catch (error) {
+    console.error('Error updating contact:', error);
+    throw new Error('Failed to update contact');
+  }
 };
