@@ -20,6 +20,7 @@ export const getContactsController = async (req, res, next) => {
     sortBy,
     sortOrder,
     filter,
+    id: req.user._id,
   });
   res.status(200).json({
     status: 200,
@@ -30,7 +31,10 @@ export const getContactsController = async (req, res, next) => {
 
 export const getContactByIdController = async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await getContactsById(contactId);
+
+  const { _id } = req.user;
+
+  const contact = await getContactsById(contactId, _id);
 
   if (!contact) {
     throw createHttpError(404, 'Contact not found');
@@ -44,6 +48,7 @@ export const getContactByIdController = async (req, res, next) => {
 };
 
 export const creationContact = async (req, res, next) => {
+  const userId = req.user._id;
   const { name, phoneNumber, email, isFavourite, contactType } = req.body;
 
   if (!name && !phoneNumber && !contactType) {
@@ -61,7 +66,7 @@ export const creationContact = async (req, res, next) => {
     contactType,
   };
 
-  const postedContact = await createContact(newContact);
+  const postedContact = await createContact(userId, newContact);
 
   res.status(201).json({
     status: 201,
@@ -72,7 +77,8 @@ export const creationContact = async (req, res, next) => {
 
 export const contactDelete = async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await deleteContact(contactId);
+  const { _id } = req.user;
+  const contact = await deleteContact(contactId, _id);
 
   if (!contact) {
     next(createHttpError(404, 'Contact not found'));
@@ -84,6 +90,7 @@ export const contactDelete = async (req, res, next) => {
 
 export const patchContact = async (req, res, next) => {
   const { contactId } = req.params;
+  const { _id } = req.user;
   const { name, phoneNumber, email, isFavourite, contactType } = req.body;
   const changingContact = {
     ...(name && { name }),
@@ -92,7 +99,7 @@ export const patchContact = async (req, res, next) => {
     ...(isFavourite !== undefined && { isFavourite }),
     ...(contactType && { contactType }),
   };
-  const contactChange = await updateContact(contactId, changingContact);
+  const contactChange = await updateContact(contactId, changingContact, _id);
 
   if (!contactChange) {
     next(createHttpError(404, 'Contact not found'));

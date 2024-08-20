@@ -1,6 +1,6 @@
-import { Router } from "express";
-import contactRouter from "./contacts";
-import authRouter from "./auth";
+import { Router } from 'express';
+import contactRouter from './contacts';
+import authRouter from './auth';
 
 const router = Router();
 router.use('/contacts', contactRouter);

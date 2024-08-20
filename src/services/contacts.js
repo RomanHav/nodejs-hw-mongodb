@@ -8,12 +8,13 @@ export const getAllContacts = async ({
   sortOrder = SORT_ORDER.ASC,
   sortBy = 'name',
   filter = {},
+  id,
 }) => {
   try {
     const limit = perPage;
     const skip = (page - 1) * perPage;
 
-    const contactQuery = Contact.find();
+    const contactQuery = Contact.find({ userId: id });
 
     if (filter.type) {
       contactQuery.where('contactType').equals(filter.type);
@@ -22,7 +23,7 @@ export const getAllContacts = async ({
       contactQuery.where('isFavourite').equals(filter.isFavourite);
     }
 
-    const contactsCount = await Contact.find()
+    const contactsCount = await Contact.find({ userId: id })
       .merge(contactQuery)
       .countDocuments();
 
@@ -48,9 +49,9 @@ export const getAllContacts = async ({
   }
 };
 
-export const getContactsById = async (contactId) => {
+export const getContactsById = async (contactId, userId) => {
   try {
-    const contact = await Contact.findById(contactId);
+    const contact = await Contact.findById({ _id: contactId, userId });
     if (!contact) {
       throw new Error('Contact not found');
     }
@@ -61,9 +62,9 @@ export const getContactsById = async (contactId) => {
   }
 };
 
-export const createContact = async (payload) => {
+export const createContact = async (userId, payload) => {
   try {
-    const newContact = await Contact.create(payload);
+    const newContact = await Contact.create({ userId: userId, ...payload });
     return newContact;
   } catch (error) {
     console.error('Error creating contact:', error);
@@ -71,9 +72,12 @@ export const createContact = async (payload) => {
   }
 };
 
-export const deleteContact = async (contactId) => {
+export const deleteContact = async (contactId, userId) => {
   try {
-    const deletedContact = await Contact.findOneAndDelete({ _id: contactId });
+    const deletedContact = await Contact.findOneAndDelete({
+      _id: contactId,
+      userId,
+    });
     if (!deletedContact) {
       throw new Error('Contact not found');
     }
@@ -84,10 +88,15 @@ export const deleteContact = async (contactId) => {
   }
 };
 
-export const updateContact = async (contactId, payload, options = {}) => {
+export const updateContact = async (
+  contactId,
+  payload,
+  options = {},
+  userId,
+) => {
   try {
     const updatedContact = await Contact.findOneAndUpdate(
-      { _id: contactId },
+      { _id: contactId, userId },
       payload,
       {
         new: true,

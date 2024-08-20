@@ -1,20 +1,20 @@
-import createHttpError from "http-errors";
-import { Session } from "../db/models/session";
-import { User } from "../db/models/user";
+import createHttpError from 'http-errors';
+import { User } from '../db/models/user.js';
+import { Session } from '../db/models/session.js';
 
-export const authenticate = async(req, res, next) => {
-    const authHeader = req.get('Authorization');
-    if(!authHeader) {
-       next(createHttpError(401, 'Please provide Authorization header'));
-        return;
-    }
-    const bearer = authHeader.split(' ')[0];
-    const token = authHeader.split(' ')[1];
-    if (bearer !== 'Bearer' || !token) {
-        next(createHttpError(401, 'Auth header should be of type Bearer'));
-        return;
-    };
-    const session = await Session.findOne({ accessToken: token });
+export const authenticate = async (req, res, next) => {
+  const authHeader = req.get('Authorization');
+  if (!authHeader) {
+    next(createHttpError(401, 'Please provide Authorization header'));
+    return;
+  }
+  const bearer = authHeader.split(' ')[0];
+  const token = authHeader.split(' ')[1];
+  if (bearer !== 'Bearer' || !token) {
+    next(createHttpError(401, 'Auth header should be of type Bearer'));
+    return;
+  }
+  const session = await Session.findOne({ accessToken: token });
 
   if (!session) {
     next(createHttpError(401, 'Session not found'));
