@@ -51,7 +51,7 @@ export const getAllContacts = async ({
 
 export const getContactsById = async (contactId, userId) => {
   try {
-    const contact = await Contact.findById({ _id: contactId, userId });
+    const contact = await Contact.findOne({ _id: contactId, userId });
     if (!contact) {
       throw new Error('Contact not found');
     }
@@ -91,8 +91,8 @@ export const deleteContact = async (contactId, userId) => {
 export const updateContact = async (
   contactId,
   payload,
-  options = {},
   userId,
+  options = {},
 ) => {
   try {
     const updatedContact = await Contact.findOneAndUpdate(
