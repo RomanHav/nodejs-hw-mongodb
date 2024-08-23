@@ -91,8 +91,8 @@ export const deleteContact = async (contactId, userId) => {
 export const updateContact = async (
   contactId,
   payload,
-  options = {},
   userId,
+  options = {},
 ) => {
   try {
     const updatedContact = await Contact.findOneAndUpdate(
