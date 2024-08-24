@@ -8,15 +8,41 @@ info:
   description:
     This is a documentation of contacts app
 tags:
-   - name: Contacts
+  - name: Contacts
     description: Operations about contacts.
   - name: Auth
     description: Auth operations.
 servers:
   - url: http://localhost:3000
-  - url: https://contacts-app-n7fv.onrender.com/
+  - url: https://contacts-app-n7fv.onrender.com
 paths:
-  $ref: ../swagger/paths/contacts/{id}/get.yaml
+  /contacts/{id}:
+    get:
+       $ref: '../swager/paths/contacts/{id}/get.yaml'
+    delete:
+      $ref: '../swager/paths/contacts/{id}/delete.yaml'
+    patch:
+      $ref: '../swager/paths/contacts/{id}/patch.yaml'
+  /contacts:
+    get:
+      $ref: '../swager/paths/contacts/get.yaml'
+    post:
+      $ref: '../swager/paths/contacts/post.yaml'
+  /auth/register:
+    post:
+      $ref: '../swager/paths/auth/register.yaml'
+  /auth/login:
+    post:
+      $ref: '../swager/paths/auth/login.yaml'
+  /auth/logout:
+    post:
+      $ref: '../swager/paths/auth/logout.yaml'
+  /auth/send-reset-email:
+    post:
+      $ref: '../swager/paths/auth/sendResetEmail.yaml'
+  /auth/reset-pwd:
+    post:
+      $ref: '../swager/paths/auth/resetPwd.yaml'
 components:
   securitySchemes:
     bearerAuth:

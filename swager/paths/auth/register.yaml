@@ -1,0 +1,54 @@
+tags:
+  - Auth
+summary: Register user
+operationId: postRegister
+description: 'Create a user with payload'
+security:
+  - bearerAuth: []
+requestBody:
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - name
+          - email
+          - password
+        properties:
+          name:
+            description: "User's name"
+            type: string
+            example: 'Roman Dails'
+          email:
+            description: "The user's email"
+            type: string
+            example: 'roman@gmail.com'
+          password:
+            description: "The password user's email"
+            type: string
+            example: '87654321'
+responses:
+  '201':
+    description: Creates a user
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 201
+            message:
+              type: string
+              example: 'Successfully registered a user!'
+            data:
+              type: object
+              $ref: ..\..\components\schemas\user.yaml
+  '409':
+    $ref: ..\..\components\responses\auth\409_auth.yaml
+  '500':
+    $ref: ..\..\components\responses\500.yaml

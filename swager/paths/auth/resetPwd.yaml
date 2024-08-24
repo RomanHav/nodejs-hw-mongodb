@@ -1,0 +1,47 @@
+tags:
+  - Auth
+summary: Reset password
+operationId: postResetPwd
+description: 'Reset password for user with payload'
+security:
+  - bearerAuth: []
+requestBody:
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - token
+          - password
+        properties:
+          token:
+            description: "The token got in mail"
+            type: string
+            example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NmM2ZmRlYmMyYWExYWUzNWRhNWVkNzEiLCJlbWFpbCI6InJvbTE0ZGltQGdtYWlsLmNvbSIsImlhdCI6MTcyNDMzMTQwMiwiZXhwIjoxNzI0MzMyMzAyfQ.KvdlBbOoFhdVbSP0FjlHd18k6YqTN46PcQUUpeFocZo'
+          password:
+            description: "The password user's email"
+            type: string
+            example: '87654321'
+responses:
+  '200':
+    description: Reset password a user
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - status
+            - message
+            - data
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: 'Password was successfully reset!'
+            data:
+              type: object
+              $ref: ..\..\components\schemas\user.yaml
+  '404':
+    $ref: ..\..\components\responses\auth\404_auth.yaml
